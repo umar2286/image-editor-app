@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎨 Free Image Editor - Enhance, Remove BG, Add BG</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎨 Free Image Editor</h1>
+            <p class="subtitle">Enhance images, remove backgrounds, and add new backgrounds using AI-powered tools</p>
+        </header>
+
+        <!-- Upload Section -->
+        <div class="upload-section card">
+            <h2>📤 Upload Your Image</h2>
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-content">
+                    <div class="upload-icon">📁</div>
+                    <p>Drag & drop your image here</p>
+                    <p class="upload-hint">or click to browse (Max: 16MB)</p>
+                    <input type="file" id="imageInput" accept="image/*" hidden>
+                    <button class="btn-primary" onclick="document.getElementById('imageInput').click()">
+                        Choose File
+                    </button>
+                </div>
+            </div>
+            <div class="file-info" id="fileInfo" style="display: none;">
+                <span id="fileName"></span>
+                <button class="btn-secondary" onclick="resetUpload()">Change Image</button>
+            </div>
+        </div>
+
+        <!-- Image Preview Section -->
+        <div class="preview-section card" id="previewSection" style="display: none;">
+            <h2>👀 Preview</h2>
+            <div class="image-comparison">
+                <div class="image-box">
+                    <h3>Original Image</h3>
+                    <div class="image-container">
+                        <img id="originalImage" alt="Original Image">
+                    </div>
+                </div>
+                <div class="image-box">
+                    <h3>Processed Image</h3>
+                    <div class="image-container">
+                        <img id="processedImage" alt="Processed Image">
+                        <div class="image-placeholder" id="imagePlaceholder">
+                            <p>Apply edits to see results here</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tools Section -->
+        <div class="tools-section" id="toolsSection" style="display: none;">
+            <!-- Enhancement Tools -->
+            <div class="tool-group card">
+                <h3>🛠️ Image Enhancements</h3>
+                <div class="tool-grid">
+                    <button class="tool-btn" onclick="applyEnhancement('contrast')">
+                        <span class="tool-icon">⚡</span>
+                        Contrast
+                    </button>
+                    <button class="tool-btn" onclick="applyEnhancement('brightness')">
+                        <span class="tool-icon">💡</span>
+                        Brightness
+                    </button>
+                    <button class="tool-btn" onclick="applyEnhancement('sharpness')">
+                        <span class="tool-icon">🔍</span>
+                        Sharpness
+                    </button>
+                    <button class="tool-btn" onclick="applyEnhancement('color')">
+                        <span class="tool-icon">🎨</span>
+                        Color Boost
+                    </button>
+                    <button class="tool-btn" onclick="applyEnhancement('blur')">
+                        <span class="tool-icon">🌀</span>
+                        Blur
+                    </button>
+                    <button class="tool-btn" onclick="applyEnhancement('sharpen')">
+                        <span class="tool-icon">✂️</span>
+                        Sharpen
+                    </button>
+                    <button class="tool-btn" onclick="applyEnhancement('edges')">
+                        <span class="tool-icon">🔲</span>
+                        Edge Detect
+                    </button>
+                    <button class="tool-btn" onclick="applyEnhancement('emboss')">
+                        <span class="tool-icon">🏛️</span>
+                        Emboss
+                    </button>
+                </div>
+            </div>
+
+            <!-- Background Tools -->
+            <div class="tool-group card">
+                <h3>🔍 Background Tools</h3>
+                <div class="tool-grid">
+                    <button class="tool-btn btn-danger" onclick="removeBackground()">
+                        <span class="tool-icon">🧹</span>
+                        Remove Background (AI)
+                    </button>
+                    <button class="tool-btn btn-warning" onclick="simpleRemoveBackground()">
+                        <span class="tool-icon">🪄</span>
+                        Simple BG Remove
+                    </button>
+                    <button class="tool-btn btn-success" onclick="showBackgroundColorPicker()">
+                        <span class="tool-icon">🖼️</span>
+                        Add Background
+                    </button>
+                </div>
+                
+                <!-- Background Color Picker -->
+                <div class="color-picker" id="colorPicker" style="display: none;">
+                    <h4>Choose Background Color:</h4>
+                    <div class="color-options">
+                        <div class="color-option" style="background: #ffffff;" onclick="addBackground('#ffffff')" title="White"></div>
+                        <div class="color-option" style="background: #000000;" onclick="addBackground('#000000')" title="Black"></div>
+                        <div class="color-option" style="background: #ff0000;" onclick="addBackground('#ff0000')" title="Red"></div>
+                        <div class="color-option" style="background: #00ff00;" onclick="addBackground('#00ff00')" title="Green"></div>
+                        <div class="color-option" style="background: #0000ff;" onclick="addBackground('#0000ff')" title="Blue"></div>
+                        <div class="color-option" style="background: #ffff00;" onclick="addBackground('#ffff00')" title="Yellow"></div>
+                        <div class="color-option" style="background: #ff00ff;" onclick="addBackground('#ff00ff')" title="Magenta"></div>
+                        <div class="color-option" style="background: #00ffff;" onclick="addBackground('#00ffff')" title="Cyan"></div>
+                    </div>
+                    <div class="custom-color">
+                        <label>Custom Color:</label>
+                        <input type="color" id="customColor" value="#3498db">
+                        <button class="btn-secondary" onclick="addBackground(document.getElementById('customColor').value)">
+                            Apply Custom
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Utility Tools -->
+            <div class="tool-group card">
+                <h3>⚙️ Utility Tools</h3>
+                <div class="tool-grid">
+                    <button class="tool-btn btn-info" onclick="resetToOriginal()">
+                        <span class="tool-icon">🔄</span>
+                        Reset to Original
+                    </button>
+                    <button class="tool-btn btn-success" onclick="downloadImage()" id="downloadBtn">
+                        <span class="tool-icon">💾</span>
+                        Download Image
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Messages -->
+        <div id="status" class="status"></div>
+
+        <!-- Loading Overlay -->
+        <div id="loading" class="loading-overlay" style="display: none;">
+            <div class="loading-content">
+                <div class="spinner"></div>
+                <p id="loadingText">Processing your image...</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Built with Flask & Pillow | Deploy on AWS EC2</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
